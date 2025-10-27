@@ -1,6 +1,6 @@
 import random
 
-from Connect4 import Connect4
+from scripts.Connect4 import Connect4
 import numpy as np
 
 # Minimax algorithm is a tree searching algorithm that determines the best move to play

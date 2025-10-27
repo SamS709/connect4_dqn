@@ -1,16 +1,17 @@
 import os
 import logging
-# Suppress TensorFlow output
+
+# Force TensorFlow to use CPU (RTX 5070 Ti compute capability 12.0 not yet fully supported)
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=INFO, 2=WARNING, 3=ERROR
 logging.getLogger('tensorflow').setLevel(logging.ERROR)
 
 import random
 import keras
 import tensorflow as tf
-import tensorflow
 from collections import deque
-from env import Env
-from Connect4 import *
+from scripts.env import Env
+from scripts.Connect4 import *
 
 #model = dnn1
 #target = dnn2

@@ -1,5 +1,5 @@
 import numpy as np
-from Connect4 import Connect4
+from scripts.Connect4 import Connect4
 
 class Env(Connect4):
     

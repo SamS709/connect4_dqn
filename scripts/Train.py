@@ -1,15 +1,20 @@
+import os
 import logging
+
+# Force TensorFlow to use CPU (RTX 5070 Ti compute capability 12.0 not yet fully supported)
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TensorFlow warnings
 
 # Simple one-line logging setup
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(asctime)s - %(message)s')
 
-from DQN2 import DQN
+from scripts.DQN import DQN
 import numpy as np
-from Connect4 import Connect4
-from env import Env
+from scripts.Connect4 import Connect4
+from scripts.env import Env
 import tensorflow as tf
-from epsilon import epsilon
-from MinMax import MinMax
+from scripts.epsilon import epsilon
+from scripts.MinMax import MinMax
 import multiprocessing
 
 

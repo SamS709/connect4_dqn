@@ -1,6 +1,8 @@
 import os
 import logging
-# Suppress TensorFlow output
+
+# Force TensorFlow to use CPU (RTX 5070 Ti compute capability 12.0 not yet fully supported)
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # 0=all, 1=INFO, 2=WARNING, 3=ERROR
 logging.getLogger('tensorflow').setLevel(logging.ERROR)
 
@@ -16,16 +18,20 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.switch import Switch
 import random as rd
 from kivy.lang import Builder
-from Connect4 import Connect4
-from DQN import DQN
 import numpy as np
-from kivy.core.window import Window
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'GUI'))
-from ai_models_interface import MyButton
+
+# Add parent directory and scripts directory to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+sys.path.insert(0, os.path.join(project_root, 'scripts'))
+
+from scripts.Connect4 import Connect4
+from scripts.DQN import DQN
+from scripts.env import Env
+from graphics.ai_models_interface import MyButton
 from global_vars import *
-from env import Env
 
 
 

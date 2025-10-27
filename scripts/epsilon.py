@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 def epsilon(iter,n_games,k,eps_0):
     return (np.exp(k)-np.exp(k*iter/n_games))*eps_0/(np.exp(k)-1)
+
 def plot_epsilon(n_games,k_list,eps_0): # displays the evolution of epsilon when k changes
     X = np.arange(0,n_games,0.1)
     Y = []

@@ -8,6 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TensorFlow warnings
 # Simple one-line logging setup
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(asctime)s - %(message)s')
 
+from kivy.clock import mainthread
 from scripts.DQN import DQN
 import numpy as np
 from scripts.Connect4 import Connect4
@@ -22,12 +23,31 @@ N_LEARNING = 0
 
 class Train(Connect4):
 
-    def __init__(self,model_name="model_name",reset=False,learning_rate=0.5e-3,discount_factor=0.99,softmax_=False,eps = 0.5):
+    def __init__(self,model_name,info_label = None,scrollable_lablel = None,box = None,pb = None,reset=False,learning_rate=0.5e-3,discount_factor=0.99,softmax_=False,eps = 0.5):
         super().__init__()
         self.dqnP1 = DQN(reset = reset, eps = eps, P1='1',learning_rate=learning_rate,gamma=discount_factor,model_name=model_name,softmax_=softmax_,n_neurons=128,n_layers=3)
         self.dqnP2 = DQN(reset = reset, eps = eps, P1='2',learning_rate=learning_rate,gamma=discount_factor,model_name=model_name,softmax_=softmax_,n_neurons=128,n_layers=3)
         self.env = Env()
+        self.model_name = model_name
         # self.minimax = MinMax()
+        self.kivy = True
+        
+        self.info_label = info_label        
+        self.scrollable_lablel = scrollable_lablel
+        self.box = box
+        self.pb = pb
+        if self.info_label == None:
+            self.kivy = False
+        
+    @mainthread
+    def modif_label(self,i,N=1):
+        if N==1:
+            self.info_label.text = "Nom du modèle: " + str(self.model_name) + "\nNombre d'epoques: " + str(i+1) + " / "+str(self.N)
+            self.pb.value = (i+1)/self.N*self.pb.max
+        if N==2:
+            self.scrollable_lablel.layout.remove_widget(self.box)
+
+
  
     #replay_buffer.append(state,action,reward,next_state,run)
     def play_one_game(self,eps):
@@ -87,11 +107,13 @@ class Train(Connect4):
 
 
     def train_n_games(self,n):
+        self.N = n
         game_lengths = []
         game_lengths_mean = []
         n_points = 50
         registration_rate = n/n_points # such that we get n_points points for the final game_length plot
         for episode in range(n):
+            self.modif_label(episode,N=1) if self.kivy else None
             eps = epsilon(episode,n,2,eps_0=0.3)
             game_length = self.play_one_game(eps)
             game_lengths.append(game_length)
@@ -105,6 +127,7 @@ class Train(Connect4):
                     self.dqnP2.target.set_weights(self.dqnP2.model.get_weights())
                     self.dqnP1.model.save(self.dqnP1.dir_path,overwrite=True)
                     self.dqnP2.model.save(self.dqnP2.dir_path,overwrite=True)
+        self.modif_label(i=n,N=2)
         return game_lengths_mean
     
     def play_one_game_evaluation(self,j,depth):

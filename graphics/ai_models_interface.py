@@ -2,6 +2,10 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+# Get project root directory for font paths
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FONT_PATH_PIXEL = os.path.join(PROJECT_ROOT, 'fonts', 'pixel.TTF')
+from scripts.Train import Train
 from global_vars import *
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
@@ -33,11 +37,10 @@ class ThemedProgressBar(ProgressBar):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
-
 class GetInfo: # Retrieve the informations from a model
      
      def __init__(self,game="Connect4"):
-          self.path = f"\{game}\AI\models"
+          self.path = os.path.join("/models")
      
      def get_model_path(self,model_name):
          return os.path.join(os.getcwd()+self.path,model_name)
@@ -46,9 +49,7 @@ class GetInfo: # Retrieve the informations from a model
           return os.listdir(os.getcwd()+self.path)
      
      def get_info_model(self,model_name): # returns the name, number of dense layers, number of neurons per dense layer
-        print(os.getcwd())
-        filepath=os.getcwd()+self.path+f"\{str(model_name)}1"
-        print(filepath)
+        filepath=self.get_model_path(model_name)+"1.h5"
         model = keras.models.load_model(filepath=filepath)
         cfg = model.get_config()
         layers = cfg['layers']
@@ -132,7 +133,7 @@ class ScrollableBoxes(BoxLayout):
         self.layout = BoxLayout(padding = [5,10,5,10], orientation="vertical",spacing=5, size_hint_y=None )
         self.layout.bind(minimum_height=self.layout.setter('height'))
         box=BoxLayout(size_hint_y=None, height=40)
-        lbl = Label(font_name = "fonts/pixel.ttf",size_hint_y=None, height=40, text = "Modeles en cours d'entrainement:",valign="middle", halign="center", color=WHITE)
+        lbl = Label(font_name=FONT_PATH_PIXEL, size_hint_y=None, height=40, text="Modeles en cours d'entrainement:", valign="middle", halign="center", color=WHITE)
         lbl.bind(
                     size=lambda instance, value: (
                         setattr(instance, 'text_size', value),
@@ -200,7 +201,7 @@ class ChooseAIModel(BoxLayout): # Menu to choose the model to play against
         self.model_list = self.getInfo.get_model_names()
         self.L_buttons = []
         for i in range(len(self.model_list)):
-            btn = MyButton(text=str(self.model_list[i][:-1]), size_hint_y=None, height=40, on_press = self.on_press, on_release = self.on_release)
+            btn = MyButton(text=str(self.model_list[i][:-4]), size_hint_y=None, height=40, on_press = self.on_press, on_release = self.on_release)
             if i % 2 == 0:
                 self.L_buttons.append(btn)
                 self.layout.add_widget(btn)
@@ -404,8 +405,6 @@ class EditModels(ChooseAIModel): # Menu to edit (create and delete) models
         if instance.button_color==RED:
             instance.button_color=DARK_RED
             path = self.getInfo.get_model_path(self.model_name)
-            print(path)
-            print(self.model_name)
             cond = self.model_name == "Expert" or self.model_name == "Intermediaire" or self.model_name == "Debutant"
             if cond:
                 self.log_error(2)
@@ -685,7 +684,7 @@ class MenuTrain(MenuInput):
     def on_release_validate(self,instance):
         if instance.button_color == DARK_GREEN:
             if self.epochs is not None and self.learning_rate is not None and self.discount_factor is not None and MODEL_NAME not in self.L_training and len(self.L_training) < 3:
-                lbl = Label(font_name = "fonts/pixel.TTF",halign= 'left',size_hint_y=0.7, text = "Nom du medele: "+str(MODEL_NAME) + "\nNombre d'epoques: 0 / "+str(self.epochs))
+                lbl = Label(font_name=FONT_PATH_PIXEL, halign='left', size_hint_y=0.7, text="Nom du medele: "+str(MODEL_NAME) + "\nNombre d'epoques: 0 / "+str(self.epochs))
                 lbl.bind(
                             size=lambda instance, value: (
                                 setattr(instance, 'text_size', value),
@@ -723,7 +722,7 @@ class MenuTrain(MenuInput):
             print(lbl.text)
             model_name = MODEL_NAME
             trainer = Train(model_name=MODEL_NAME,learning_rate=learning_rate,discount_factor=discount_factor,info_label=lbl,scrollable_lablel=self.scrollable_label,box = box,pb = pb)
-            trainer.P1vsP2(epochs)
+            trainer.train_n_games(epochs)
             self.log_info(6, model_name)
             self.L_training.remove(model_name)
     
@@ -736,12 +735,17 @@ class BoxLayoutWithLine(BoxLayout):
         super().__init__(**kwargs)
 
 class ai_models_interfaceApp(App):
+      # Override kv_file to prevent auto-loading
       def build(self):
+            # Manually load the .kv file only once
+            if not hasattr(Builder, '_ai_models_interface_loaded'):
+                Builder.load_file(os.path.join(os.path.dirname(__file__), 'ai_models_interface.kv'))
+                Builder._ai_models_interface_loaded = True
             return EditModels()
       
-
-if __name__!="__main__":
-    Builder.load_file(os.path.join(os.path.dirname(__file__), 'ai_models_interface.kv'))
+      def load_kv(self, filename=None):
+            # Override to prevent Kivy from auto-loading the .kv file
+            pass
 
 if __name__=="__main__":
     var1 = 1

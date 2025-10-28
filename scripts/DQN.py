@@ -100,10 +100,7 @@ class DQN(Connect4):
         next_state, reward, terminated = self.env.step(action)
         self.replay_buffer.append((state, action, reward, next_state,terminated))
         return next_state, reward, terminated
-    
 
-
-    
     
     def sample_experiences(self):
         indexes = np.random.randint(len(self.replay_buffer),size=self.batch_size)

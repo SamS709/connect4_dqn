@@ -9,3 +9,5 @@ if __name__ == "__main__":
         import traceback
         print("Kivy app crashed with error:")
         traceback.print_exc()
+        
+ 

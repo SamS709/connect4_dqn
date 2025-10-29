@@ -1,3 +1,5 @@
+
+#:import navigation_screen_manager navigation_screen_manager
 #:import BoxLayoutWithActionBar graphics.box_layout_with_action_bar.BoxLayoutWithActionBar
 
 #:set LIGHT_GREEN  [169 / 256, 221 / 256, 175 / 256, 1]
@@ -56,7 +58,7 @@
             size_hint: 1, 0.15
             InfoLabel:
                 id : title_label
-                text: "Modele personnalise"
+                text: "Models menu"
                 font_name: "fonts/pixel.TTF"
                 color: 0,0,0,0
                 font_size : 0.05*self.width
@@ -75,7 +77,7 @@
                     InfoLabel:
                         font_size : 0.06*self.width
                         font_name: "fonts/pixel.TTF"
-                        text: "Infos sur le modele"
+                        text: "About the model"
                 BoxLayout:
                     id: info_box
                     orientation: "vertical"
@@ -243,11 +245,11 @@
 
 <MenuInput>:
     orientation: "vertical"
-    text1 : "Nom du modele"
-    text2 : "Nombre de couches de neurones"
-    text3 : "Nombre de neurones par couche"
-    green_text : "Creer"
-    titre : "Créé ton modele"
+    text1 : "Name of the model"
+    text2 : "Number of layers"
+    text3 : "Number of neurons per layer"
+    green_text : "Create"
+    titre : "Create your model"
     filter1 : None
     filter2 : 'int'
     BoxLayout:
@@ -286,7 +288,7 @@
         size_hint : 1,0.2
         orientation: "horizontal"
         MyButton:
-            text: "Annuler"
+            text: "Cancel"
             button_color: root.cancel_color
             on_press: root.on_press_cancel(self)
             on_release: root.on_release_cancel(self)
@@ -373,3 +375,8 @@
 
 
 <ScrollableBoxes>:
+
+<MyScreenManager>:
+    Screen:
+        name: "ChoiceGame"
+        EditModels:

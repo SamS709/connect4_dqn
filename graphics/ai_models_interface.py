@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH_PIXEL = os.path.join(PROJECT_ROOT, 'fonts', 'pixel.TTF')
 from scripts.Train import Train
+from graphics.navigation_screen_manager import NavigationScreenManager
 from global_vars import *
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang import Builder
@@ -17,6 +18,7 @@ from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.uix.textinput import TextInput
 from kivy.uix.progressbar import ProgressBar
+from kivy.properties import ObjectProperty
 from kivy.graphics import Color, Rectangle, Line
 from kivy.clock import mainthread
 if __name__!="__main__":
@@ -99,8 +101,8 @@ class ScrollableLabel(ScrollView): # A Scrollable label used to display logs
 class ScrollingMenu(BoxLayout):
 
     # kivy properties you find in the graphics.kv file (TextArea class)
-    text = StringProperty("Liste des modeles") # text displayed in the blue area
-    title = StringProperty("Selectionne le modele d'IA de Ned") # title displayed in the brown area
+    text = StringProperty("List of the models") # text displayed in the blue area
+    title = StringProperty("Select Ned's AI model") # title displayed in the brown area
     image_source = StringProperty('images/transparent.png') # source of the image displayed in the text area
     image_height = NumericProperty(30) # height of the image displayed
     TitleArea_color = ListProperty(SAND) # color of the title area
@@ -133,7 +135,7 @@ class ScrollableBoxes(BoxLayout):
         self.layout = BoxLayout(padding = [5,10,5,10], orientation="vertical",spacing=5, size_hint_y=None )
         self.layout.bind(minimum_height=self.layout.setter('height'))
         box=BoxLayout(size_hint_y=None, height=40)
-        lbl = Label(font_name=FONT_PATH_PIXEL, size_hint_y=None, height=40, text="Modeles en cours d'entrainement:", valign="middle", halign="center", color=WHITE)
+        lbl = Label(font_name=FONT_PATH_PIXEL, size_hint_y=None, height=40, text="Models in training:", valign="middle", halign="center", color=WHITE)
         lbl.bind(
                     size=lambda instance, value: (
                         setattr(instance, 'text_size', value),
@@ -167,9 +169,9 @@ class ChooseAIModel(BoxLayout): # Menu to choose the model to play against
         self.scroll = self.scroll_menu.ids.scroll 
         self.info_label = self.ids.info_label
         self.scroll_box = self.ids.Scroll_box
-        self.text1 = "Nom du modele"
-        self.text2 = "Nombre de couches"
-        self.text3 = "Nombre de neurones par couche"
+        self.text1 = "Name of the model"
+        self.text2 = "Nomber of layers"
+        self.text3 = "Number of neurons per layer"
         self.info_label.text = f"{self.text1}: \n\n\n{self.text2}: \n\n\n{self.text3}:"
         self.init_buttons()
         self.setup_title()
@@ -348,19 +350,23 @@ class EditModels(ChooseAIModel): # Menu to edit (create and delete) models
         self.bottom_box.clear_widgets()
         self.bottom_box.add_widget(self.log_label)
         self.left_title = self.scroll_menu.ids.left_title
-        self.left_title.text = "Liste des modeles"
+        self.left_title.text = "List of the models"
         self.actions = BoxLayout(size_hint=(1,0.3),orientation="horizontal",padding = [0.1*self.width,0,0.1*self.width,0.1*self.height], spacing = 10)
         self.actions2 = BoxLayout(size_hint=(1,0.3),orientation="horizontal",padding = [0.1*self.width,0,0.1*self.width,0.1*self.height], spacing = 10)
 
         self.add = MyButton(text="New", on_press=self.add_on_press, on_release = self.add_on_release)
         self.delete = MyButton(text="Delete", on_press=self.delete_on_press, on_release = self.delete_on_release)
         self.train = MyButton(text="Train", on_press=self.train_on_press, on_release = self.train_on_release)
+        self.play = MyButton(text="Play", on_press=self.play_on_press, on_release = self.play_on_release)
+        
         self.add.button_color=GREEN
         self.delete.button_color=LIGHT_RED
         self.train.button_color=LIGHT_BLUE
+        self.play.button_color=LIGHT_PURPLE
         self.actions.add_widget(self.delete)
-        self.actions.add_widget(self.train)
-        self.actions2.add_widget(self.add)
+        self.actions.add_widget(self.add)
+        self.actions2.add_widget(self.train)
+        self.actions2.add_widget(self.play)
         self.scroll_menu.add_widget(self.actions)
         self.scroll_menu.add_widget(self.actions2)
 
@@ -383,7 +389,17 @@ class EditModels(ChooseAIModel): # Menu to edit (create and delete) models
         MODEL_NAME = instance.text
         print(MODEL_NAME)
         self.train.button_color = BLUE
+        self.play.button_color = PURPLE
         self.delete.button_color = RED
+        
+    def play_on_press(self,instance):
+        if instance.button_color == PURPLE:
+            instance.button_color = DARK_PURPLE
+        
+    def play_on_release(self,instance):
+        if instance.button_color == DARK_PURPLE:
+            instance.button_color = PURPLE
+            
     
     def train_on_press(self,instance):
         if instance.button_color == BLUE:
@@ -429,7 +445,7 @@ class EditModels(ChooseAIModel): # Menu to edit (create and delete) models
         if instance.button_color == DARK_GREEN:
             instance.button_color = GREEN
             self.scroll_box.clear_widgets()
-            self.info_label.text = f"Nom du modele: \n\n\nNombre de couches: \n\n\nNombre de neurones par couche:"
+            self.info_label.text = f"Name of the model: \n\n\nNomber of layers: \n\n\nNomber of neurons per layer:"
             #self.scroll_box.padding = [0,0,0,0]
             self.scroll_box.add_widget(self.info_input)
 
@@ -494,24 +510,24 @@ class MenuInput(BoxLayout):
 
     def on_kv_post(self, base_widget):
         super().on_kv_post(base_widget)
-        self.text1 = "Nom du modele"
-        self.text2 = "Nombre de couches"
-        self.text3 = "Nombre de neurones par couche"
+        self.text1 = "Model name"
+        self.text2 = "Number of layers"
+        self.text3 = "Number of neurons per layer"
         self.info_label.text = f"{self.text1}: \n\n\n{self.text2}: \n\n\n{self.text3}:"
     
     def log_info(self,i):
         self.bottom_box.padding = [0,0.05*self.bottom_box.height,0,0.05*self.bottom_box.height]
         if i== 0:
-            self.log_label.text="\n[ERREUR] Le nom du modele ne peut pas etre vide."+self.log_label.text
+            self.log_label.text="\n[ERROR] The model name cannot be empty."+self.log_label.text
         if i == 1:
-            self.log_label.text="\n[ERREUR] Le nombre de neurones doit être compris entre 1 et 512."+self.log_label.text
+            self.log_label.text="\n[ERROR] The number of neurons must be between 1 and 512."+self.log_label.text
         if i == 2:
-            self.log_label.text="\n[ERREUR] Le nombre de couches doit être compris entre 1 et 10."+self.log_label.text
+            self.log_label.text="\n[ERROR] The number of layers must be between 1 and 10."+self.log_label.text
 
     def on_press_cancel(self,instance):
         if instance.button_color == RED:
             instance.button_color = DARK_RED
-        print("COUCOU")
+        print("Cancel pressed")
 
     def set_on_press0(self):
         if self.children[1].children[2].children[0].children[1].text == "":
@@ -596,13 +612,13 @@ class MenuTrain(MenuInput):
         self.scrollable_label = ScrollableBoxes()
         self.scrollable_label.font_size1 = 0.1*self.width
         super().on_kv_post(base_widget)
-        self.text1 = "Nombre d'epoques"
-        self.text2 = "Taux d'apprentissage"
-        self.text3 = "Facteur de reduction"
+        self.text1 = "Number of epochs"
+        self.text2 = "Learning rate"
+        self.text3 = "Discount factor"
         self.filter1 = "int"
         self.filter2 = "float"
-        self.titre = "Entraine le modele" + MODEL_NAME
-        self.green_text = "Entrainer"
+        self.titre = "Train the model " + MODEL_NAME
+        self.green_text = "Train"
         self.epochs = None
         self.learning_rate = None
         self.discount_factor = None
@@ -613,21 +629,21 @@ class MenuTrain(MenuInput):
     def log_info(self,i,model_name = ""):
         self.bottom_box.padding = [0,0.05*self.bottom_box.height,0,0.05*self.bottom_box.height]
         if i == 0:
-            self.log_label.text = "\n[ERREUR] Le nombre d'epoques doit être compris entre 1 et 10000."+self.log_label.text
+            self.log_label.text = "\n[ERROR] The number of epochs must be between 1 and 10000."+self.log_label.text
         if i == 1:
-            self.log_label.text = "\n[ERREUR] Le taux d'apprentissage doit être compris entre 0.00001 et 0.1"+self.log_label.text
+            self.log_label.text = "\n[ERROR] The learning rate must be between 0.00001 and 0.1"+self.log_label.text
         if i == 2:
-            self.log_label.text = "\n[ERREUR] Le facteur de réduction doit être compris entre 0.1 et 0.999"+self.log_label.text
+            self.log_label.text = "\n[ERROR] The discount factor must be between 0.1 and 0.999"+self.log_label.text
         if i == 3:
-            self.log_label.text = "\n[ERREUR] Tu dois remplir tous les champs avec une valeur valide avant de lancer l'entrainement."+self.log_label.text
+            self.log_label.text = "\n[ERROR] You must fill all fields with valid values before starting training."+self.log_label.text
         if i == 4:
-            self.log_label.text = "\n[ERREUR] Ce modèle est déjà en cours d'entrainement."+self.log_label.text
+            self.log_label.text = "\n[ERROR] This model is already being trained."+self.log_label.text
         if i == 5:
-            self.log_label.text = "\n[color=3EB64B][INFO] L'entrainement du modèle "+model_name+" a été lancé avec succès.[/color]"+self.log_label.text
+            self.log_label.text = "\n[color=3EB64B][INFO] Training of model "+model_name+" has been started successfully.[/color]"+self.log_label.text
         if i == 6:
-            self.log_label.text = "\n[color=3EB64B][INFO] L'entrainement du modèle "+model_name+" est terminé.[/color]"+self.log_label.text
+            self.log_label.text = "\n[color=3EB64B][INFO] Training of model "+model_name+" is complete.[/color]"+self.log_label.text
         if i == 7:
-            self.log_label.text = "\n[ERREUR] Tu ne peux pas entrainer plus de 3 modeles a la fois."+self.log_label.text
+            self.log_label.text = "\n[ERROR] You cannot train more than 3 models at once."+self.log_label.text
 
     
     def set_on_press0(self):
@@ -733,19 +749,33 @@ class BoxLayoutWithLine(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        
+
+
+class MyScreenManager(NavigationScreenManager): 
+    pass
+
 
 class ai_models_interfaceApp(App):
-      # Override kv_file to prevent auto-loading
-      def build(self):
-            # Manually load the .kv file only once
-            if not hasattr(Builder, '_ai_models_interface_loaded'):
-                Builder.load_file(os.path.join(os.path.dirname(__file__), 'ai_models_interface.kv'))
-                Builder._ai_models_interface_loaded = True
-            return EditModels()
-      
-      def load_kv(self, filename=None):
-            # Override to prevent Kivy from auto-loading the .kv file
-            pass
+    manager = ObjectProperty(None)
+    
+    def get_application_config(self):
+        return super(ai_models_interfaceApp, self).get_application_config()
+    
+    def get_kv_path(self):
+        return os.path.join(os.path.dirname(__file__), 'ai_models_interface.kv')
+    
+    def load_kv(self, filename=None):
+        return Builder.load_file(os.path.join(os.path.dirname(__file__), 'ai_models_interface.kv'))
+    
+    def build(self):
+        self.width = Window.width
+        self.height = Window.height
+        self.manager = MyScreenManager() # We access the functions of MyScreenManager which inherits from NavigationSScreenManager and its methods
+        return self.manager # we return the instantiated object and call a method via app.manager.method() where method is defined in MyScreenManager or inherited by MyScreenManager
+
+
+
 
 if __name__=="__main__":
     var1 = 1

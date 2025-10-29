@@ -16,8 +16,7 @@ if not hasattr(Builder, '_box_layout_with_action_bar_loaded'):
 
 class BoxLayoutWithActionBar(BoxLayout):
     title = StringProperty() # c'est une chaîne de caractère qu'on va pouvoir remplir après dans un fichier kv
-    icon = StringProperty("images/wifi/wifi_w.png")
-    button_color_wifi = ListProperty([1,1,1,0])
+
 
     
   

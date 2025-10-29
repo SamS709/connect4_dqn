@@ -1,6 +1,8 @@
-# Connect 4 Deep Q-Network (DQN) 🎮🧠
+# Connect 4 Deep Q-Network 🎮🧠
 
-A sophisticated implementation of Deep Q-Learning for playing Connect 4, featuring neural network-based AI agents that learn optimal strategies through self-play and reinforcement learning.
+The goal of the repo is to make RL agents play connect 4. The goal is to see which one is the most performant. This is an extension to my Roboticc arm pplaying connect4 project, that explores more deeply the different algorithms that can solve the task. 
+
+You can train your own models with customed parameters for each RL algorithm directly in the UI. The purpose of this is to offer an easy way for people to explore RL algorithms, and add their own, following the same structure as DQN example. The training UI facilitates the training with allowing you to choose your parameters, and the Connect4 UI allows you to test your model.
 
 ## 🌟 Features
 

@@ -1,4 +1,4 @@
-# Connect 4 RL Solving 🎮🧠
+# Connect 4 RL Solving
 
 The goal of the repo is to try different RL algorithms to play connect4 (model free). This is an extension to my Roboticc arm pplaying connect4 project, that explores more deeply the different algorithms that can solve the task. 
 
@@ -8,7 +8,7 @@ This project is in developpement. For the moment, the algorithms avaible are:
 - Double DQN
 
 
-## 🌟 Core components
+## Core components
 
 - **/scripts/Env.py**: The Connect4 environnement
 - **/scripts/Train.py**: Training scripts for algorithms
@@ -20,7 +20,7 @@ This project is in developpement. For the moment, the algorithms avaible are:
 - **Model Persistence**: Save and load trained models
 - **GUI Interface**: Interactive game interface using Kivy
 
-## 🏗️ Architecture
+## Architecture
 
 ### Core Components
 
@@ -31,38 +31,6 @@ This project is in developpement. For the moment, the algorithms avaible are:
 | `Connect4.py` | Core Connect 4 game logic and board management |
 | `env.py` | Game environment following OpenAI Gym-style interface |
 | `connect4InterfaceNoRobot.py` | GUI interface for human vs AI gameplay |
-
-### Neural Network Architecture
-
-```
-Input Layer (42 neurons) 
-    ↓
-One-Hot Encoding (42 → 126 features)
-    ↓ 
-Dense Layer (n_neurons × 3)
-    ↓
-Batch Normalization → ReLU → Dropout (0.2)
-    ↓
-[Hidden Layers] × (n_layers - 2)
-    ↓
-Dense Layer (n_neurons)
-    ↓
-Batch Normalization → ReLU
-    ↓
-Output Layer (42 neurons, softmax)
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-```bash
-# Required packages
-tensorflow>=2.16.1
-numpy
-kivy  # For GUI interface
-collections  # For replay buffer
-```
 
 ### Installation
 
@@ -79,25 +47,18 @@ collections  # For replay buffer
    conda activate connect4_dqn
    
    # Install dependencies
-   pip install tensorflow numpy kivy
-   ```
-
-3. **Create models directory**
-   ```bash
-   mkdir -p models
+   pip install tensorflow >= 2.16.1 numpy kivy
    ```
 
 ### Quick Start
 
-#### 1. Test the DQN Implementation
+#### 1. Test the default models
 ```bash
 python DQN2.py
 ```
 
 #### 2. Train AI Agents
-```bash
-python Train2.py
-```
+
 
 #### 3. Play Against AI
 ```bash

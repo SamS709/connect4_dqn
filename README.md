@@ -52,319 +52,97 @@ This project is in developpement. For the moment, the algorithms avaible are:
 
 ### Quick Start
 
-#### 1. Test the default models
 ```bash
-python DQN2.py
+python main.py
 ```
 
-#### 2. Train AI Agents
+#### 1. Test the defaults models
+
+There is one model avaible for each algorithm.
+
+Select the desired algorith and press play.
+
+<img src = "images/play.png" width = 400/>
 
 
-#### 3. Play Against AI
-```bash
-python connect4InterfaceNoRobot.py
-```
+#### 2. Make your own model
 
-## 🎯 Usage
+In the main menu, select "New" button and enter the desired parameters for your model.
 
-### Training Configuration
+<img src = "images/new.png" width = 400/>
 
-```python
-# Example training setup
-trainer = Train(
-    model_name="my_model",
-    learning_rate=0.5e-3,
-    discount_factor=0.98,
-    eps=0.5,  # Initial epsilon for exploration
-    reset=False  # Set to True to start fresh training
-)
+You can also delete a model.
 
-# Train for n games
-trainer.train_n_games(1000)
-```
+#### 3. Train AI Agents
 
-### DQN Parameters
+In the main menu, select the model you want to play, then press train.
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `n_layers` | 2 | Number of hidden layers |
-| `n_neurons` | 32 | Neurons per hidden layer |
-| `learning_rate` | 1e-2 | Adam optimizer learning rate |
-| `gamma` | 1e-1 | Discount factor for future rewards |
-| `eps` | 0.9 | Initial epsilon for ε-greedy strategy |
-| `batch_size` | 32 | Experience replay batch size |
+Finally, select the parameters for the training, and start it !
 
-## 🧠 Deep Q-Learning Details
+<img src = "images/train.png" width = 400/>
 
-### 🎯 Learning Process Overview
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Game State    │───▶│   DQN Agent     │───▶│     Action      │
-│                 │    │                 │    │                 │
-│  [ 0 0 0 0 0 0 0] │    │  Neural Network │    │   Column: 3     │
-│  [ 0 0 0 0 0 0 0] │    │                 │    │                 │
-│  [ 0 0 0 0 0 0 0] │    │ Q-Values for    │    │                 │
-│  [ 0 0 0 1 0 0 0] │    │ each column     │    │                 │
-│  [ 0 0 2 1 0 0 0] │    │                 │    │                 │
-│  [ 0 1 2 1 2 0 0] │    │ [0.1,0.3,0.2,   │    │                 │
-└─────────────────┘    │  0.8,0.1,0.2,0.1]│    └─────────────────┘
-                       └─────────────────┘
-                                │
-                                ▼
-                       ┌─────────────────┐
-                       │   Experience    │
-                       │     Storage     │
-                       │                 │
-                       │ (state, action, │
-                       │ reward, next_   │
-                       │ state, done)    │
-                       └─────────────────┘
-```
+## How does the agent train ?
 
-### 🎮 Self-Play Training Cycle
+The goal of the repo is to make the best agents from nothing. I didn't want to train an agent against a predefind algorithm such as minimax, because it implicitly requires a knowlage of the game as a prerequisite. Therefore, I chose to train 2 RL agents against each other.
 
-#### Step 1: Initial Game State
-```
-Connect 4 Board (Empty):
-┌───┬───┬───┬───┬───┬───┬───┐
-│   │   │   │   │   │   │   │ ← Row 5
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ ← Row 4
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ ← Row 3
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ ← Row 2
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ ← Row 1
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ ← Row 0
-└───┴───┴───┴───┴───┴───┴───┘
-  0   1   2   3   4   5   6   ← Columns
-```
 
-#### Step 2: Player 1 (Red) Makes Move
-```
-Agent 1 Decision Process:
-┌─────────────────┐
-│ Current State:  │
-│ [0,0,0,0,0,0,0, │ ← Flattened board (42 elements)
-│  0,0,0,0,0,0,0, │
-│  0,0,0,0,0,0,0, │
-│  0,0,0,0,0,0,0, │
-│  0,0,0,0,0,0,0, │
-│  0,0,0,0,0,0,0] │
-└─────────────────┘
-         │
-         ▼ (Neural Network Processing)
-┌─────────────────┐
-│ Q-Values:       │
-│ Col 0: 0.12     │ ← Low probability
-│ Col 1: 0.08     │
-│ Col 2: 0.15     │
-│ Col 3: 0.25     │ ◄── HIGHEST! Choose this
-│ Col 4: 0.18     │
-│ Col 5: 0.11     │
-│ Col 6: 0.11     │
-└─────────────────┘
-         │
-         ▼ (Action: Drop in Column 3)
-         
-Result Board:
-┌───┬───┬───┬───┬───┬───┬───┐
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │ 1 │   │   │   │ ← Player 1 piece
-└───┴───┴───┴───┴───┴───┴───┘
-  0   1   2   3   4   5   6
-```
+In the point of view of an agent, the shot of the opponent is cosidered as a part of the environnement. For example:
 
-#### Step 3: Player 2 (Yellow) Responds
-```
-Agent 2 sees updated board and decides:
-┌───┬───┬───┬───┬───┬───┬───┐
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │ 2 │   │   │   │ ← Player 2 blocks
-└───┴───┴───┴───┴───┴───┴───┘
-                │
-                ▼ (Strategic blocking move)
-```
+Let's say we start a game:
 
-#### Step 4: Learning from Outcomes
-```
-Game Progression Example:
+<img src = "images/start_game.png" width = 400/>
 
-Move 1:           Move 5:           Final State:
-┌─────────┐      ┌─────────┐       ┌─────────┐
-│    1    │      │ 2   1   │       │ 2 1 1 2 │ ← Player 1 WINS!
-│    2    │ ───▶ │ 1 2 2 1 │ ───▶  │ 1 2 2 1 │   (4 in a row)
-└─────────┘      │ 2 1 1 2 │       │ 2 1 1 2 │
-                 └─────────┘       └─────────┘
+First agent (agent1) plays:
 
-Experience Storage:
-┌─────────────────────────────────────────────────────────┐
-│ State₁ → Action₁ → Reward₁ → State₂ → Done             │
-│ [0,0,0,1,0,0,0...] → 3 → +1.0 → [final] → True        │ ← Win!
-│                                                         │
-│ State₁ → Action₁ → Reward₁ → State₂ → Done             │
-│ [0,0,0,2,0,0,0...] → 3 → -1.0 → [final] → True        │ ← Loss!
-└─────────────────────────────────────────────────────────┘
-```
+<img src = "images/state1.png" width = 400/>
 
-### 🔄 Experience Replay & Learning
+Second Agent (agent2) plays:
 
-```
-Training Batch (Random Sample from Memory):
-┌─────────────────────────────────────────────────────────────┐
-│ Experience 1: [state] → action: 3 → reward: +1.0 → [next]  │
-│ Experience 2: [state] → action: 1 → reward: -0.1 → [next]  │
-│ Experience 3: [state] → action: 4 → reward: +0.5 → [next]  │
-│ Experience 4: [state] → action: 2 → reward: -1.0 → [next]  │
-│                           ...                               │
-│ Experience 32: [state] → action: 6 → reward: +0.0 → [next] │
-└─────────────────────────────────────────────────────────────┘
-                              │
-                              ▼ (Batch Learning)
-┌─────────────────────────────────────────────────────────────┐
-│                    Q-Learning Update                        │
-│                                                             │
-│ Target Q-Value = Reward + γ × max(Q_next_state)           │
-│                                                             │
-│ Current Q-Value = Neural_Network(current_state)[action]     │
-│                                                             │
-│ Loss = MSE(Target Q-Value, Current Q-Value)                │
-│                                                             │
-│ Backpropagation: Update network weights to minimize loss   │
-└─────────────────────────────────────────────────────────────┘
-```
+<img src = "images/next_state1.png" width = 400/>
 
-### 🎯 Epsilon-Greedy Strategy Evolution
+Agent1 plays: 
 
-```
-Training Progress:
+<img src = "images/next_state_2.png" width = 400/>
 
-Episode 1 (ε = 0.9):           Episode 500 (ε = 0.3):         Episode 1000 (ε = 0.1):
-┌─────────────────┐           ┌─────────────────┐            ┌─────────────────┐
-│ 90% Random      │────────▶ │ 30% Random      │─────────▶  │ 10% Random      │
-│ 10% Best Action │           │ 70% Best Action │            │ 90% Best Action │
-│                 │           │                 │            │                 │
-│ Exploration     │           │ Balanced        │            │ Exploitation    │
-│ Heavy Learning  │           │ Learning        │            │ Optimal Play    │
-└─────────────────┘           └─────────────────┘            └─────────────────┘
+For an agent, the observation is constituted by the vector [state, action, next_state, reward, done].
 
-Random Move Example:          Neural Network Move:           Expert Move:
-┌───┬───┬───┬───┬───┬───┬───┐ ┌───┬───┬───┬───┬───┬───┬───┐  ┌───┬───┬───┬───┬───┬───┬───┐
-│   │   │   │   │   │   │   │ │   │   │   │   │   │   │   │  │   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤ ├───┼───┼───┼───┼───┼───┼───┤  ├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ │   │   │   │   │   │   │   │  │   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤ ├───┼───┼───┼───┼───┼───┼───┤  ├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │   │   │   │   │ │   │   │   │   │   │   │   │  │   │   │   │   │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤ ├───┼───┼───┼───┼───┼───┼───┤  ├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │ 2 │   │   │   │ │   │   │   │ 2 │   │   │   │  │   │   │   │ 2 │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤ ├───┼───┼───┼───┼───┼───┼───┤  ├───┼───┼───┼───┼───┼───┼───┤
-│   │   │   │ 1 │   │   │   │ │   │   │   │ 1 │   │   │   │  │   │   │   │ 1 │   │   │   │
-├───┼───┼───┼───┼───┼───┼───┤ ├───┼───┼───┼───┼───┼───┼───┤  ├───┼───┼───┼───┼───┼───┼───┤
-│   │ 1 │   │ 2 │   │   │   │ │   │   │ 1 │ 2 │   │   │   │  │   │   │   │ 2 │ 1 │   │   │
-└───┴───┴───┴───┴───┴───┴───┘ └───┴───┴───┴───┴───┴───┴───┘  └───┴───┴───┴───┴───┴───┴───┘
-  Random move: Col 1 (bad)     Smart move: Col 2 (good)      Expert: Col 4 (blocks win!)
-```
+Here, for example, the state and the next state would be:
 
-### 🧮 Neural Network Processing Flow
+|  | State | Next State |
+|-------|-------|------------|
+| Agent 1 | <img src="images/start_game.png" width="50"/> | <img src="images/next_state1.png" width="50"/> |
+| Agent 2 | <img src="images/state1.png" width="50"/> | <img src="images/next_state_2.png" width="50"/> |
 
-```
-Input Processing:
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Connect 4 Board │───▶│   One-Hot       │───▶│   Flattened     │
-│                 │    │   Encoding      │    │   Vector        │
-│ [0,1,2,0,1,2,0, │    │                 │    │                 │
-│  0,0,0,0,0,0,0, │    │ 0→[1,0,0]      │    │ [1,0,0,0,1,0,   │
-│  0,0,0,0,0,0,0, │    │ 1→[0,1,0]      │    │  0,0,1,1,0,0,   │
-│  0,0,0,0,0,0,0, │    │ 2→[0,0,1]      │    │  0,1,0,0,0,0,   │
-│  0,0,0,0,0,0,0, │    │                 │    │  ...           │
-│  0,0,0,0,0,0,0] │    │                 │    │  126 features] │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-       42 values              3D encoding           126 features
-
-Hidden Layer Processing:
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Dense Layer 1   │───▶│ Batch Norm +    │───▶│ Dense Layer 2   │
-│                 │    │ ReLU + Dropout  │    │                 │
-│ 126 → 96 nodes  │    │                 │    │ 96 → 32 nodes   │
-│                 │    │ ┌─────────────┐ │    │                 │
-│ W₁ × input + b₁ │    │ │ 20% dropout │ │    │ W₂ × h₁ + b₂   │
-│                 │    │ │ (training)  │ │    │                 │
-└─────────────────┘    │ └─────────────┘ │    └─────────────────┘
-                       └─────────────────┘
-
-Output Generation:
-┌─────────────────┐    ┌─────────────────┐
-│ Final Dense     │───▶│ Q-Values for    │
-│                 │    │ Each Action     │
-│ 32 → 7 nodes    │    │                 │
-│                 │    │ [Q₀, Q₁, Q₂,   │
-│ Softmax/Linear  │    │  Q₃, Q₄, Q₅,   │
-│ Activation      │    │  Q₆]            │
-│                 │    │                 │
-│                 │    │ Action = argmax │
-└─────────────────┘    └─────────────────┘
-```
 
 ### State Representation
-- **Board State**: 6×7 grid flattened to 42-element vector
-- **Encoding**: 0 (empty), 1 (player 1), 2 (player 2)
-- **One-Hot**: Each position expanded to 3-dimensional one-hot vector
+- **Representation**: 6×7 grid flattened to 42-element vector : 0 (empty), 1 (player 1), 2 (player 2)
+- **Encoding**: One hot => state of size 3*42 because : 0 = [0, 0, 0] // 1 = [1, 1, 0] // 2 = [0, 0, 1] //   
 
 ### Action Space
 - **Actions**: 7 possible column choices (0-6)
 - **Invalid Moves**: Handled by environment with negative rewards
 
 ### Reward System
-- **Win**: +1 reward
-- **Loss**: -1 reward  
+- **Win**: +10 reward
+- **Loss**: -10 reward  
 - **Draw**: 0 reward
-- **Invalid Move**: Negative penalty
-- **Ongoing**: Small step penalty to encourage faster wins
+- **Invalid Move**: -15
 
-### Training Process
-1. **Self-Play**: Two DQN agents play against each other
-2. **Experience Collection**: Store (state, action, reward, next_state, done) tuples
-3. **Replay Buffer**: Maintain buffer of recent experiences
-4. **Batch Learning**: Sample random batches for training
-5. **Target Network**: Separate target network for stable learning
+
 
 ## 📊 Model Performance
 
-### Training Metrics
-- **Episode Rewards**: Track cumulative rewards per game
-- **Win Rate**: Percentage of games won vs random/previous versions
-- **Loss Convergence**: Monitor training loss reduction
-- **Epsilon Decay**: Exploration rate reduction over time
 
-### Evaluation
-```python
-# Evaluate trained model
-dqn = DQN("trained_model")
-state = np.array([0] * 42)  # Empty board
-action_probs = dqn.model.predict(state[np.newaxis])[0]
-best_action = np.argmax(action_probs)
-```
+### RL vs MINIMAX
+
+Reward and Game length are not good metrics for this environnement. The only way to measure how good an agent performs is to play against it, or **measure its winrate against a performing agent**. 
+
+Then, I evaluate its performance by measuring its winrate frequently against the **minimax algorith** (that explore all the possibilities in the future and takes the best one). I evaluate it for different levels of exploration's depth of minimax algorith (1, 2 and 3). 3 means that the algorithm will explore 3 shots in the future to take the best action.
+
+These are avaible in "More info" which takes you to this menu:
+
+<img src = "images/plots.png" width = 400/>
 
 ## 🎮 Game Interface
 
@@ -373,45 +151,6 @@ The GUI interface (`connect4InterfaceNoRobot.py`) provides:
 - **AI Opponent**: Play against trained DQN
 - **Visual Feedback**: Real-time game state updates
 - **Score Tracking**: Win/loss statistics
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-**1. TensorFlow Import Errors**
-```bash
-# Use tf.keras instead of separate keras import
-import tensorflow as tf
-# All keras functionality via tf.keras.*
-```
-
-**2. Model Loading Issues**
-```bash
-# Ensure custom layers are registered
-custom_objects = {'OneHotLayer': OneHotLayer}
-model = tf.keras.models.load_model(path, custom_objects=custom_objects)
-```
-
-**3. GPU Setup (Optional)**
-```bash
-# Check GPU availability
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-```
-
-### Performance Tips
-- **CPU Training**: Works well for Connect 4 complexity
-- **Batch Size**: Increase for faster training (if memory allows)
-- **Learning Rate**: Lower for more stable convergence
-- **Replay Buffer**: Larger buffer for more diverse experiences
-
-## 📈 Future Improvements
-
-- [ ] **Advanced Architectures**: Convolutional layers for spatial awareness
-- [ ] **Tournament Play**: Multi-agent tournaments for robust evaluation  
-- [ ] **Opening Book**: Pre-computed optimal opening moves
-- [ ] **Alpha-Beta Integration**: Hybrid AI with traditional game tree search
-- [ ] **Web Interface**: Browser-based gameplay
-- [ ] **Model Compression**: Smaller models for deployment
 
 ## 🤝 Contributing
 
@@ -425,19 +164,11 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- **DeepMind**: Original DQN paper and methodology
-- **OpenAI Gym**: Environment interface inspiration
-- **TensorFlow/Keras**: Deep learning framework
-- **Connect 4 Community**: Game rules and strategy insights
 
 ## 📞 Contact
 
-- **Author**: [Your Name]
-- **Email**: [your.email@example.com]
-- **Project Link**: [https://github.com/yourusername/connect_4_dqn](https://github.com/yourusername/connect_4_dqn)
+- **Author**: [Sami Leroux]
+- **Email**: [sami.lerouxpro@gmail.com]
+- **Project Link**: [https://github.com/SamS709/ned_project](https://github.com/SamS709/ned_project)
 
----
 
-*Built with ❤️ and lots of ☕ for the love of AI and classic games*

@@ -1,7 +1,9 @@
 
 #:import navigation_screen_manager graphics.navigation_screen_manager
 #:import Game graphics.connect4InterfaceNoRobot.Game
-#import MyDropDownButton graphics.my_dropdown_button.MyDropDownButton
+#:import MyDropDownButton graphics.my_dropdown_button.MyDropDownButton
+#:import ModelInfoScreen graphics.model_info.ModelInfoScreen
+
 
 #:set LIGHT_GREEN  [169 / 256, 221 / 256, 175 / 256, 1]
 #:set GREEN  [62 / 256, 182 / 256, 75 / 256, 1]
@@ -83,15 +85,29 @@
                     id: info_box
                     orientation: "vertical"
                     size_hint: 1, 0.7
-                    InfoLabel:
-                        id: info_label
-                        font_name: "graphics/fonts/robotaur.ttf"
-                        markup : True
-                        font_size : 0.035*self.width
-                        text_size: 0.9*self.size[0],0.9*self.size[1]
-                        text : ""
-                        halign:'left'
-                        valign:'top'
+                    FloatLayout:
+                        padding: 50, 0, 50, 0
+                        InfoLabel:
+                            id: info_label
+                            size_hint: 1, 1
+                            pos_hint: {'x': 0, 'y': 0}
+                            font_name: "graphics/fonts/robotaur.ttf"
+                            markup : True
+                            font_size : 0.035*self.width
+                            text_size: 0.9*self.size[0],0.9*self.size[1]
+                            text : ""
+                            halign:'left'
+                            valign:'top'
+                        MyButton:
+                            id: i_button
+                            on_press : root.info_b_press(self)
+                            on_release:  root.info_b_release(self)
+                            text: "more info"
+                            size_hint: None, None
+                            size: 100, 40
+                            font_size: 12
+                            pos_hint: {'right': 1, 'center_y': 1.0}
+                    
         BoxLayout:
             id : bottom_box
             padding: self.width/3,self.height/5,self.width/3,self.height/5
@@ -277,6 +293,7 @@
             release : root.set_on_release1
             text_input : root.text_input1
             text : root.text2
+            
         InfoInput:
             filter : root.filter2
             button_set_color : root.button_set_color2
@@ -284,6 +301,7 @@
             release : root.set_on_release2
             text_input : root.text_input2
             text : root.text3
+            
         
     BoxLayout:
         spacing : 0.03*self.width
@@ -385,3 +403,6 @@
         EditModels:
     Game:
         name: "Game"
+    ModelInfoScreen:
+        name: "ModelInfoWindow"
+        

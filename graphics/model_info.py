@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from graphics.ai_models_interface import InfoLabel
+from graphics.my_dropdown_button import MyDropDownButton
 from kivy.app import App
 from kivy.properties import ListProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
@@ -10,6 +11,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.lang import Builder
+from kivy.uix.screenmanager import Screen
 import matplotlib
 from global_vars import *
 matplotlib.use('Agg')  # Use non-interactive backend
@@ -30,29 +32,19 @@ except ImportError:
 from scripts.logger import Logger
 import numpy as np
 
-class MyDropDown(Button): # A rounded button with borders that appears multiple times in the interface
-    button_color = ListProperty(LIGHT_BLUE)
-    line_button_color = ListProperty(WHITE)
-    line_width = NumericProperty(2)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.original_color = LIGHT_BLUE[:]
-        self.pressed_color = DARK_BLUE[:]
+class ModelInfoScreen(Screen):
+    def __init__(self, **kw):
+        super().__init__(**kw)
         
-    def on_press(self):
-        """Change color when button is pressed"""
-        self.button_color = self.pressed_color
-        
-    def on_release(self):
-        """Restore original color when button is released"""
-        self.button_color = self.original_color
-    
-    
+    def on_pre_enter(self, *args):
+        global MODEL_NAME
+        model_name = var1.model_name
+        self.model_info = self.ids.model_info
+        self.model_info.info_label.text = model_name
 
 class ModelInfoWindow(BoxLayout):
     
-    def __init__(self, model_name, n_model, **kwargs):
+    def __init__(self, model_name="expert", n_model="1", **kwargs):
         super().__init__(**kwargs)
         self.orientation = 'vertical'
         self.model_name = model_name
@@ -115,11 +107,11 @@ class ModelInfoWindow(BoxLayout):
         
         # Depth selector dropdown
         if self.n_depths > 0:
-            self.depth_button = MyDropDown(text=f'Depth: {self.current_depth}     V', size_hint_x=0.3, size_hint_y=None, height=35, pos_hint={'top': 1})
+            self.depth_button = MyDropDownButton(text=f'Depth: {self.current_depth}     V', size_hint_x=0.3, size_hint_y=None, height=35, pos_hint={'top': 1})
             self.depth_dropdown = DropDown(height = 1)
             
             for depth in self.available_depths:
-                btn = MyDropDown(text=f'Depth {depth}', size_hint_y=None, size_hint_x=None, width=150, height=35)
+                btn = MyDropDownButton(text=f'Depth {depth}', size_hint_y=None, size_hint_x=None, width=150, height=35)
                 # Manually apply MyButton styling (since dropdown doesn't use .kv styling)
                 btn.button_color = btn.button_color  # Triggers the property
                 btn.line_button_color = btn.line_button_color

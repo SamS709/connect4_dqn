@@ -347,7 +347,7 @@ if __name__=="__main__":
 
     train = True
     plot = True
-    trainer = Train(model_name= "A2C")
+    trainer = Train(model_name= "expert")
 
     if train :
         import matplotlib.pyplot as plt

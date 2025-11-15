@@ -200,6 +200,16 @@ class ChooseAIModel(BoxLayout): # Menu to choose the model to play against
     def release_refresh(self,instance):
         instance.size_hint = (None,0.5)
         self.load_button_list()
+        
+    def info_b_press(self, instance):
+        instance.button_color = DARK_BLUE
+        
+    def info_b_release(self, instance):
+        if instance.button_color == DARK_BLUE:
+            App.get_running_app().manager.push('ModelInfoWindow')
+            instance.button_color = LIGHT_BLUE
+                    
+
 
         
     

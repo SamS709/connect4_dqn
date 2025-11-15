@@ -1,5 +1,0 @@
-{
-  "total_epochs": 0,
-  "algorithm": "DuelingDDQN",
-  "evaluations": []
-}

@@ -21,6 +21,7 @@ from kivy.uix.screenmanager import Screen
 import random as rd
 from kivy.lang import Builder
 import numpy as np
+import time
 import sys
 import os
 Builder.load_file(os.path.join(os.path.dirname(__file__), 'connect4InterfaceNoRobot.kv'))
@@ -184,6 +185,7 @@ class Connect4GameNoRobot(Screen,FloatLayout,Connect4): # Main class for Connect
                     self.add_widget(self.LwCJ[i][j])
         if not self.terminated:
             self.player = 'J'
+            time.sleep(60)
 
     def press(self,instance):
         PP = self.free_pos_table(self.grid)

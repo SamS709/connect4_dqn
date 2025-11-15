@@ -15,22 +15,6 @@ This project is in developpement. For the moment, the algorithms avaible are:
 - **/scripts/Connect4.py**: The basic rules for the connect4 (useful for the env)
 - **/scripts/rl_algorithms**: The folder containing the avaible algorithms (in which you can create yours).
 - **/graphics**: The folder containing the graphics part
-- **Experience Replay**: Efficient learning through stored game experiences
-- **Epsilon-Greedy Strategy**: Balanced exploration vs exploitation
-- **Model Persistence**: Save and load trained models
-- **GUI Interface**: Interactive game interface using Kivy
-
-## Architecture
-
-### Core Components
-
-| File | Description |
-|------|-------------|
-| `DQN2.py` | Enhanced Deep Q-Network implementation with TensorFlow/Keras |
-| `Train2.py` | Training pipeline for multi-agent self-play |
-| `Connect4.py` | Core Connect 4 game logic and board management |
-| `env.py` | Game environment following OpenAI Gym-style interface |
-| `connect4InterfaceNoRobot.py` | GUI interface for human vs AI gameplay |
 
 ### Installation
 
